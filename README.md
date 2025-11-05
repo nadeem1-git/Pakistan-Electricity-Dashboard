@@ -40,4 +40,4 @@ This project is an interactive Streamlit dashboard designed to **analyze, foreca
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/yourusername/yourrepo.git
+   git clone https://github.com/nadeem1-git/Pakistan-Electricity-Dashboard
