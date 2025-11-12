@@ -90,22 +90,30 @@ if module == "Electricity Production Forecasting":
 
 elif module == "Electricity Shortage Forecasting":
     st.subheader("Electricity Shortage Forecasting")
-    up = st.file_uploader("Upload shortage/ supply-demand file (csv/xlsx)", type=["csv","xlsx"], key="short_upload")
+    up = st.file_uploader("Upload shortage/ supply-demand file (csv/xlsx)", type=["csv", "xlsx"], key="short_upload")
     if up:
         df = load_data(up)
         if df is not None:
             st.dataframe(df.head())
-            if 'Year' in df.columns and ('Shortage' in df.columns or 'Electricity Shortage' in df.columns):
-                short_col = 'Shortage' if 'Shortage' in df.columns else 'Electricity Shortage'
-                fig = px.bar(df, x='Year', y=short_col, title="Shortage over Years", color=short_col)
+            
+            # Check for shortage column
+            if 'Electricity Shortage' in df.columns:
+                fig = px.bar(df, x='Year', y='Electricity Shortage', 
+                             title="Electricity Shortage over Years", 
+                             color='Electricity Shortage')
                 st.plotly_chart(fig, use_container_width=True)
-            elif 'Total_Generation' in df.columns and 'Total_Demand' in df.columns:
-                df['Shortage'] = df['Total_Demand'] - df['Total_Generation']
-                fig = px.line(df, x='Year', y=['Total_Generation','Total_Demand'], title="Supply vs Demand")
+            
+            # If generation and demand columns exist, calculate shortage
+            elif 'Total Generation' in df.columns and 'Electricity Demand' in df.columns:
+                df['Electricity Shortage'] = df['Electricity Demand'] - df['Total Generation']
+                fig = px.line(df, x='Year', y=['Total Generation', 'Electricity Demand'], 
+                              title="Electricity Generation vs Demand")
                 st.plotly_chart(fig, use_container_width=True)
-                st.dataframe(df[['Year','Total_Generation','Total_Demand','Shortage']].tail())
+                st.dataframe(df[['Year', 'Total Generation', 'Electricity Demand', 'Electricity Shortage']].tail())
+            
             else:
-                st.warning("File must contain Year + (Shortage) OR (Total_Generation and Total_Demand).")
+                st.warning("File must contain 'Year' + 'Electricity Shortage' OR ('Total Generation' and 'Electricity Demand').")
+
 
 elif module == "Demand Optimization Model":
     st.subheader("Demand Optimization Model")
